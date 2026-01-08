@@ -19,7 +19,6 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   
-  // Categories
   const [filter, setFilter] = useState("All");
   const categories = ["All", "Cricket", "Football", "Lacrosse", "Other", "Personal"];
 
@@ -49,15 +48,12 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
   return (
     <div className="w-full max-w-7xl mx-auto px-4">
       
-      {/* --- HEADER FIXES --- */}
+      {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
-        
-        {/* Title */}
         <h2 className="text-3xl md:text-4xl font-bold text-white border-l-4 border-emerald-500 pl-4 leading-none">
           Graphics Projects
         </h2>
         
-        {/* Filters: Changed to Flex-Wrap so they don't hide on mobile */}
         {!isHome && (
           <div className="flex flex-wrap gap-2 w-full md:w-auto">
             {categories.map((cat) => (
@@ -81,7 +77,10 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {displayProjects.map((project) => (
           <div key={project.id} onClick={() => setSelectedProject(project)}>
-            <SpotlightCard className="group h-[400px] overflow-hidden p-0 border-zinc-800 bg-black cursor-pointer">
+            
+            {/* 👇 CHANGED: Removed h-[400px], added aspect-[4/5] */}
+            <SpotlightCard className="group aspect-[4/5] overflow-hidden p-0 border-zinc-800 bg-black cursor-pointer relative">
+              
               {project.image_url ? (
                 <div className="relative h-full w-full">
                   <motion.img 
@@ -104,6 +103,7 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
                 </div>
               )}
             </SpotlightCard>
+            
           </div>
         ))}
       </div>
