@@ -19,7 +19,7 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   
-  // --- UPDATED CATEGORIES ---
+  // Categories
   const [filter, setFilter] = useState("All");
   const categories = ["All", "Cricket", "Football", "Lacrosse", "Other", "Personal"];
 
@@ -37,14 +37,11 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
     fetchProjects();
   }, []);
 
-  // Filter Logic
   const filteredProjects = projects.filter((p) => {
     if (filter === "All") return true;
-    // Checks if the category OR sub_category matches the button you clicked
     return p.category === filter || p.sub_category === filter;
   });
 
-  // Display Logic: Limit to 4 if on Home page
   const displayProjects = isHome ? projects.slice(0, 4) : filteredProjects;
 
   if (loading) return <div className="text-center text-zinc-500 py-10">Loading...</div>;
@@ -52,23 +49,25 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
   return (
     <div className="w-full max-w-7xl mx-auto px-4">
       
-      {/* Header & Filters */}
-      <div className="flex flex-col md:flex-row justify-between items-end mb-8">
-        <h2 className="text-3xl font-bold text-white border-l-4 border-emerald-500 pl-4">
+      {/* --- HEADER FIXES --- */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
+        
+        {/* Title */}
+        <h2 className="text-3xl md:text-4xl font-bold text-white border-l-4 border-emerald-500 pl-4 leading-none">
           Graphics Projects
         </h2>
         
-        {/* Only show these buttons if we are NOT on the home page */}
+        {/* Filters: Changed to Flex-Wrap so they don't hide on mobile */}
         {!isHome && (
-          <div className="flex gap-2 mt-4 md:mt-0 overflow-x-auto pb-2 scrollbar-hide">
+          <div className="flex flex-wrap gap-2 w-full md:w-auto">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setFilter(cat)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                   filter === cat
                     ? "bg-white text-black"
-                    : "border border-zinc-800 text-zinc-400 hover:text-white"
+                    : "border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-600"
                 }`}
               >
                 {cat}
@@ -109,7 +108,7 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
         ))}
       </div>
 
-      {/* View All Button (Home Page Only) */}
+      {/* View All Button */}
       {isHome && (
         <div className="mt-10 text-center">
           <Link 
@@ -121,7 +120,7 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
         </div>
       )}
 
-      {/* Modal / Lightbox */}
+      {/* Modal */}
       <AnimatePresence>
         {selectedProject && (
           <motion.div
