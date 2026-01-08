@@ -12,7 +12,7 @@ export default function SoftwareShowcase() {
   return (
     <section className="py-20 px-4 max-w-7xl mx-auto">
       <h2 className="text-3xl font-bold text-white mb-10 border-l-4 border-blue-500 pl-4">
-        Software Engineering
+        Software Projects
       </h2>
 
       {/* --- THE GRID --- */}
