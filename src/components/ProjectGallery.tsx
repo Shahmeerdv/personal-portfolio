@@ -44,7 +44,6 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
   // --- DISPLAY LOGIC ---
   let displayProjects = isHome ? projects.slice(0, 6) : filteredProjects;
 
-  // SMART PADDING for Home Page
   if (isHome && displayProjects.length > 0 && displayProjects.length < 6) {
     const missingCount = 6 - displayProjects.length;
     for (let i = 0; i < missingCount; i++) {
@@ -61,9 +60,7 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
     <div className="w-full max-w-7xl mx-auto px-4">
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
-        
-        {/* 👇 CHANGED: Wrapped H2 in a Link with Hover Effects */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 md:mb-10 gap-6">
         <Link href="/graphics" className="group">
           <h2 className="text-3xl md:text-4xl font-bold text-white group-hover:text-emerald-400 transition-colors border-l-4 border-emerald-500 group-hover:border-emerald-400 pl-4 leading-none cursor-pointer">
             Graphics Projects
@@ -89,8 +86,16 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
         )}
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* --- THE HYBRID GRID/SLIDER --- 
+         Mobile: flex + overflow-x-auto (Horizontal Scroll)
+         Desktop: grid + grid-cols-3 (Standard Grid)
+      */}
+      <div className={`
+        ${isHome 
+          ? "flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:pb-0 md:gap-6 scrollbar-hide" 
+          : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        }
+      `}>
         {displayProjects.map((project, index) => {
           
           const isArchiveLink = isHome && index === 5;
@@ -99,6 +104,8 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
             <div 
               key={`${project.id}-${index}`} 
               onClick={() => !isArchiveLink && setSelectedProject(project)}
+              // On Mobile Home: Force width to 85% of screen so users can see the next card peeking
+              className={`${isHome ? "min-w-[85vw] md:min-w-0 snap-center" : ""}`}
             >
               {isArchiveLink ? (
                 // --- FADED ARCHIVE BUTTON ---
