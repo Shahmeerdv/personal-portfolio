@@ -42,18 +42,15 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
   });
 
   // --- DISPLAY LOGIC ---
-  // If Home, we want exactly 6 slots (5 projects + 1 button)
-  // If Full Page, we show everything
   let displayProjects = isHome ? projects.slice(0, 6) : filteredProjects;
 
-  // SMART PADDING: If we don't have enough projects to fill 6 slots on Home,
-  // we reuse the last available project so the grid always looks full.
+  // SMART PADDING for Home Page
   if (isHome && displayProjects.length > 0 && displayProjects.length < 6) {
     const missingCount = 6 - displayProjects.length;
     for (let i = 0; i < missingCount; i++) {
       displayProjects.push({ 
         ...displayProjects[displayProjects.length - 1], 
-        id: 99999 + i // Unique ID to prevent React errors
+        id: 99999 + i 
       });
     }
   }
@@ -65,9 +62,13 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
       
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
-        <h2 className="text-3xl md:text-4xl font-bold text-white border-l-4 border-emerald-500 pl-4 leading-none">
-          Graphics Projects
-        </h2>
+        
+        {/* 👇 CHANGED: Wrapped H2 in a Link with Hover Effects */}
+        <Link href="/graphics" className="group">
+          <h2 className="text-3xl md:text-4xl font-bold text-white group-hover:text-emerald-400 transition-colors border-l-4 border-emerald-500 group-hover:border-emerald-400 pl-4 leading-none cursor-pointer">
+            Graphics Projects
+          </h2>
+        </Link>
         
         {!isHome && (
           <div className="flex flex-wrap gap-2 w-full md:w-auto">
@@ -92,7 +93,6 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {displayProjects.map((project, index) => {
           
-          // Logic: On Home Page, the 6th item (index 5) is ALWAYS the button
           const isArchiveLink = isHome && index === 5;
 
           return (
@@ -101,11 +101,9 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
               onClick={() => !isArchiveLink && setSelectedProject(project)}
             >
               {isArchiveLink ? (
-                // --- FADED ARCHIVE BUTTON (Uses the 6th Project as Background) ---
+                // --- FADED ARCHIVE BUTTON ---
                 <Link href="/graphics" className="block relative w-full h-full group">
                   <SpotlightCard className="aspect-[4/5] overflow-hidden p-0 border-zinc-800 bg-black relative">
-                    
-                    {/* Background Image (Darker & Faded) */}
                     {project.image_url && (
                       <img 
                         src={project.image_url} 
@@ -113,16 +111,10 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
                         className="absolute inset-0 h-full w-full object-cover opacity-40 grayscale blur-[3px] transition-all duration-500 group-hover:blur-0 group-hover:opacity-60 group-hover:scale-105"
                       />
                     )}
-                    
-                    {/* Overlay Text - SUPER PROMINENT */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 group-hover:bg-black/10 transition-colors z-10">
-                      
-                      {/* Circle Icon */}
                       <div className="p-5 rounded-full border-2 border-white/30 bg-black/60 backdrop-blur-md mb-4 group-hover:scale-110 group-hover:border-white transition-all shadow-xl">
                         <ArrowRight className="text-white w-8 h-8 md:w-6 md:h-6" />
                       </div>
-                      
-                      {/* Text */}
                       <span className="text-white font-black tracking-widest uppercase text-lg md:text-sm drop-shadow-md">
                         View Full Archive
                       </span>
