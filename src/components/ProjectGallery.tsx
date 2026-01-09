@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase"; 
 import SpotlightCard from "@/components/SpotlightCard";
 import { motion, AnimatePresence } from "framer-motion"; 
-import { X, ArrowRight } from "lucide-react"; 
+import { X, ArrowRight, LayoutGrid, StretchHorizontal } from "lucide-react"; 
 import Link from "next/link"; 
 
 interface Project {
@@ -19,6 +19,9 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   
+  // STATE: Mobile View Toggle
+  const [isGridMode, setIsGridMode] = useState(false);
+
   const [filter, setFilter] = useState("All");
   const categories = ["All", "Cricket", "Football", "Lacrosse", "Other", "Personal"];
 
@@ -41,7 +44,6 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
     return p.category === filter || p.sub_category === filter;
   });
 
-  // --- DISPLAY LOGIC ---
   let displayProjects = isHome ? projects.slice(0, 6) : filteredProjects;
 
   if (isHome && displayProjects.length > 0 && displayProjects.length < 6) {
@@ -60,13 +62,26 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
     <div className="w-full max-w-7xl mx-auto px-4">
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 md:mb-10 gap-6">
-        <Link href="/graphics" className="group">
-          <h2 className="text-3xl md:text-4xl font-bold text-white group-hover:text-emerald-400 transition-colors border-l-4 border-emerald-500 group-hover:border-emerald-400 pl-4 leading-none cursor-pointer">
-            Graphics Projects
-          </h2>
-        </Link>
+      <div className="flex flex-row flex-wrap justify-between items-end mb-6 md:mb-10 gap-4">
         
+        <div className="flex items-center gap-4">
+          <Link href="/graphics" className="group">
+            <h2 className="text-3xl md:text-4xl font-bold text-white group-hover:text-emerald-400 transition-colors border-l-4 border-emerald-500 group-hover:border-emerald-400 pl-4 leading-none cursor-pointer">
+              Graphics Projects
+            </h2>
+          </Link>
+
+          {/* --- TOGGLE BUTTON (Now visible EVERYWHERE on Mobile) --- */}
+          {/* Styled: Emerald Green + Glow to be very prominent */}
+          <button 
+            onClick={() => setIsGridMode(!isGridMode)}
+            className="md:hidden p-2.5 rounded-full bg-emerald-500 text-black hover:bg-emerald-400 transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)] active:scale-95"
+          >
+            {isGridMode ? <StretchHorizontal size={20} strokeWidth={2.5} /> : <LayoutGrid size={20} strokeWidth={2.5} />}
+          </button>
+        </div>
+        
+        {/* Categories (Hidden on Home) */}
         {!isHome && (
           <div className="flex flex-wrap gap-2 w-full md:w-auto">
             {categories.map((cat) => (
@@ -86,15 +101,23 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
         )}
       </div>
 
-      {/* --- THE HYBRID GRID/SLIDER --- 
-         Mobile: flex + overflow-x-auto (Horizontal Scroll)
-         Desktop: grid + grid-cols-3 (Standard Grid)
+      {/* --- GRID LOGIC UPDATED --- 
+         1. Desktop: Always Standard Grid.
+         2. Mobile (Grid Mode ON): Always Micro-Grid (4 columns), whether Home or Archive.
+         3. Mobile (Grid Mode OFF):
+            - Home: Slider (Horizontal Scroll)
+            - Archive: Stack (Vertical Scroll)
       */}
       <div className={`
-        ${isHome 
-          ? "flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:pb-0 md:gap-6 scrollbar-hide" 
-          : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        }
+        ${/* Desktop Rules */ "md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 md:pb-0"}
+        
+        ${/* Mobile Rules */ 
+           isGridMode 
+             ? "grid grid-cols-4 gap-2" // If Toggle ON: Micro Grid (Everywhere)
+             : isHome 
+               ? "flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 scrollbar-hide" // Home Default: Slider
+               : "grid grid-cols-1 gap-6" // Archive Default: Big Vertical Stack
+         }
       `}>
         {displayProjects.map((project, index) => {
           
@@ -104,27 +127,33 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
             <div 
               key={`${project.id}-${index}`} 
               onClick={() => !isArchiveLink && setSelectedProject(project)}
-              // On Mobile Home: Force width to 85% of screen so users can see the next card peeking
-              className={`${isHome ? "min-w-[85vw] md:min-w-0 snap-center" : ""}`}
+              className={`
+                 ${/* Width Logic for Home Slider */ isHome && !isGridMode ? "min-w-[85vw] md:min-w-0 snap-center" : "min-w-0"}
+              `}
             >
               {isArchiveLink ? (
-                // --- FADED ARCHIVE BUTTON ---
+                // --- FADED ARCHIVE BUTTON (Home Only) ---
                 <Link href="/graphics" className="block relative w-full h-full group">
                   <SpotlightCard className="aspect-[4/5] overflow-hidden p-0 border-zinc-800 bg-black relative">
                     {project.image_url && (
                       <img 
                         src={project.image_url} 
                         alt="Archive Background" 
-                        className="absolute inset-0 h-full w-full object-cover opacity-40 grayscale blur-[3px] transition-all duration-500 group-hover:blur-0 group-hover:opacity-60 group-hover:scale-105"
+                        className="absolute inset-0 h-full w-full object-cover opacity-40 grayscale blur-[3px]"
                       />
                     )}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 group-hover:bg-black/10 transition-colors z-10">
-                      <div className="p-5 rounded-full border-2 border-white/30 bg-black/60 backdrop-blur-md mb-4 group-hover:scale-110 group-hover:border-white transition-all shadow-xl">
-                        <ArrowRight className="text-white w-8 h-8 md:w-6 md:h-6" />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 z-10">
+                      <div className={`rounded-full border-2 border-white/30 bg-black/60 backdrop-blur-md mb-2 group-hover:scale-110 group-hover:border-white transition-all shadow-xl
+                        ${isGridMode ? "p-1 scale-75" : "p-5"}`}
+                      >
+                        <ArrowRight className={`text-white ${isGridMode ? "w-3 h-3" : "w-8 h-8 md:w-6 md:h-6"}`} />
                       </div>
-                      <span className="text-white font-black tracking-widest uppercase text-lg md:text-sm drop-shadow-md">
-                        View Full Archive
-                      </span>
+                      
+                      {!isGridMode && (
+                        <span className="text-white font-black tracking-widest uppercase text-lg md:text-sm drop-shadow-md">
+                          View Full Archive
+                        </span>
+                      )}
                     </div>
                   </SpotlightCard>
                 </Link>
@@ -140,12 +169,16 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
                         className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
-                      <div className="absolute bottom-0 left-0 p-6 w-full">
-                         <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded mb-2 inline-block">
-                           {project.category}
-                         </span>
-                         <h3 className="text-2xl font-bold text-white">{project.title}</h3>
-                      </div>
+                      
+                      {/* Hide Title in Micro-Grid Mode */}
+                      {!isGridMode && (
+                        <div className="absolute bottom-0 left-0 p-6 w-full">
+                           <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded mb-2 inline-block">
+                             {project.category}
+                           </span>
+                           <h3 className="text-2xl font-bold text-white">{project.title}</h3>
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <div className="h-full w-full flex flex-col justify-end p-8 bg-zinc-900/50">
