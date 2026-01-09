@@ -41,7 +41,22 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
     return p.category === filter || p.sub_category === filter;
   });
 
-  const displayProjects = isHome ? projects.slice(0, 4) : filteredProjects;
+  // --- DISPLAY LOGIC ---
+  // If Home, we want exactly 6 slots (5 projects + 1 button)
+  // If Full Page, we show everything
+  let displayProjects = isHome ? projects.slice(0, 6) : filteredProjects;
+
+  // SMART PADDING: If we don't have enough projects to fill 6 slots on Home,
+  // we reuse the last available project so the grid always looks full.
+  if (isHome && displayProjects.length > 0 && displayProjects.length < 6) {
+    const missingCount = 6 - displayProjects.length;
+    for (let i = 0; i < missingCount; i++) {
+      displayProjects.push({ 
+        ...displayProjects[displayProjects.length - 1], 
+        id: 99999 + i // Unique ID to prevent React errors
+      });
+    }
+  }
 
   if (loading) return <div className="text-center text-zinc-500 py-10">Loading...</div>;
 
@@ -75,50 +90,75 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
 
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {displayProjects.map((project) => (
-          <div key={project.id} onClick={() => setSelectedProject(project)}>
-            
-            {/* 👇 CHANGED: Removed h-[400px], added aspect-[4/5] */}
-            <SpotlightCard className="group aspect-[4/5] overflow-hidden p-0 border-zinc-800 bg-black cursor-pointer relative">
-              
-              {project.image_url ? (
-                <div className="relative h-full w-full">
-                  <motion.img 
-                    layoutId={`image-${project.id}`} 
-                    src={project.image_url} 
-                    alt={project.title} 
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
-                  <div className="absolute bottom-0 left-0 p-6 w-full">
-                     <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded mb-2 inline-block">
-                       {project.category}
-                     </span>
-                     <h3 className="text-2xl font-bold text-white">{project.title}</h3>
-                  </div>
-                </div>
-              ) : (
-                <div className="h-full w-full flex flex-col justify-end p-8 bg-zinc-900/50">
-                  <h3 className="text-2xl font-bold text-white">{project.title}</h3>
-                </div>
-              )}
-            </SpotlightCard>
-            
-          </div>
-        ))}
-      </div>
+        {displayProjects.map((project, index) => {
+          
+          // Logic: On Home Page, the 6th item (index 5) is ALWAYS the button
+          const isArchiveLink = isHome && index === 5;
 
-      {/* View All Button */}
-      {isHome && (
-        <div className="mt-10 text-center">
-          <Link 
-            href="/graphics" 
-            className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors border-b border-zinc-800 hover:border-white pb-1"
-          >
-            View Full Archive <ArrowRight size={16} />
-          </Link>
-        </div>
-      )}
+          return (
+            <div 
+              key={`${project.id}-${index}`} 
+              onClick={() => !isArchiveLink && setSelectedProject(project)}
+            >
+              {isArchiveLink ? (
+                // --- FADED ARCHIVE BUTTON (Uses the 6th Project as Background) ---
+                <Link href="/graphics" className="block relative w-full h-full group">
+                  <SpotlightCard className="aspect-[4/5] overflow-hidden p-0 border-zinc-800 bg-black relative">
+                    
+                    {/* Background Image (Darker & Faded) */}
+                    {project.image_url && (
+                      <img 
+                        src={project.image_url} 
+                        alt="Archive Background" 
+                        className="absolute inset-0 h-full w-full object-cover opacity-40 grayscale blur-[3px] transition-all duration-500 group-hover:blur-0 group-hover:opacity-60 group-hover:scale-105"
+                      />
+                    )}
+                    
+                    {/* Overlay Text - SUPER PROMINENT */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 group-hover:bg-black/10 transition-colors z-10">
+                      
+                      {/* Circle Icon */}
+                      <div className="p-5 rounded-full border-2 border-white/30 bg-black/60 backdrop-blur-md mb-4 group-hover:scale-110 group-hover:border-white transition-all shadow-xl">
+                        <ArrowRight className="text-white w-8 h-8 md:w-6 md:h-6" />
+                      </div>
+                      
+                      {/* Text */}
+                      <span className="text-white font-black tracking-widest uppercase text-lg md:text-sm drop-shadow-md">
+                        View Full Archive
+                      </span>
+                    </div>
+                  </SpotlightCard>
+                </Link>
+              ) : (
+                // --- NORMAL PROJECT CARD ---
+                <SpotlightCard className="group aspect-[4/5] overflow-hidden p-0 border-zinc-800 bg-black cursor-pointer relative">
+                  {project.image_url ? (
+                    <div className="relative h-full w-full">
+                      <motion.img 
+                        layoutId={`image-${project.id}`} 
+                        src={project.image_url} 
+                        alt={project.title} 
+                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
+                      <div className="absolute bottom-0 left-0 p-6 w-full">
+                         <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded mb-2 inline-block">
+                           {project.category}
+                         </span>
+                         <h3 className="text-2xl font-bold text-white">{project.title}</h3>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="h-full w-full flex flex-col justify-end p-8 bg-zinc-900/50">
+                      <h3 className="text-2xl font-bold text-white">{project.title}</h3>
+                    </div>
+                  )}
+                </SpotlightCard>
+              )}
+            </div>
+          );
+        })}
+      </div>
 
       {/* Modal */}
       <AnimatePresence>
