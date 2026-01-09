@@ -12,6 +12,7 @@ interface Project {
   category: string;
   sub_category: string;
   image_url: string | null;
+  alt_text: string | null; // <--- 1. Interface includes the new column
 }
 
 export default function ProjectGallery({ isHome = false }: { isHome?: boolean }) {
@@ -71,8 +72,7 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
             </h2>
           </Link>
 
-          {/* --- TOGGLE BUTTON (Now visible EVERYWHERE on Mobile) --- */}
-          {/* Styled: Emerald Green + Glow to be very prominent */}
+          {/* Toggle Button (Visible everywhere on mobile) */}
           <button 
             onClick={() => setIsGridMode(!isGridMode)}
             className="md:hidden p-2.5 rounded-full bg-emerald-500 text-black hover:bg-emerald-400 transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)] active:scale-95"
@@ -101,22 +101,16 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
         )}
       </div>
 
-      {/* --- GRID LOGIC UPDATED --- 
-         1. Desktop: Always Standard Grid.
-         2. Mobile (Grid Mode ON): Always Micro-Grid (4 columns), whether Home or Archive.
-         3. Mobile (Grid Mode OFF):
-            - Home: Slider (Horizontal Scroll)
-            - Archive: Stack (Vertical Scroll)
-      */}
+      {/* Grid / Slider Logic */}
       <div className={`
         ${/* Desktop Rules */ "md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 md:pb-0"}
         
         ${/* Mobile Rules */ 
            isGridMode 
-             ? "grid grid-cols-4 gap-2" // If Toggle ON: Micro Grid (Everywhere)
+             ? "grid grid-cols-4 gap-2" 
              : isHome 
-               ? "flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 scrollbar-hide" // Home Default: Slider
-               : "grid grid-cols-1 gap-6" // Archive Default: Big Vertical Stack
+               ? "flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 scrollbar-hide" 
+               : "grid grid-cols-1 gap-6" 
          }
       `}>
         {displayProjects.map((project, index) => {
@@ -128,11 +122,11 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
               key={`${project.id}-${index}`} 
               onClick={() => !isArchiveLink && setSelectedProject(project)}
               className={`
-                 ${/* Width Logic for Home Slider */ isHome && !isGridMode ? "min-w-[85vw] md:min-w-0 snap-center" : "min-w-0"}
+                 ${isHome && !isGridMode ? "min-w-[85vw] md:min-w-0 snap-center" : "min-w-0"}
               `}
             >
               {isArchiveLink ? (
-                // --- FADED ARCHIVE BUTTON (Home Only) ---
+                // --- FADED ARCHIVE BUTTON ---
                 <Link href="/graphics" className="block relative w-full h-full group">
                   <SpotlightCard className="aspect-[4/5] overflow-hidden p-0 border-zinc-800 bg-black relative">
                     {project.image_url && (
@@ -162,15 +156,17 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
                 <SpotlightCard className="group aspect-[4/5] overflow-hidden p-0 border-zinc-800 bg-black cursor-pointer relative">
                   {project.image_url ? (
                     <div className="relative h-full w-full">
+                      
+                      {/* 👇 2. UPDATED: Now uses alt_text for SEO */}
                       <motion.img 
                         layoutId={`image-${project.id}`} 
                         src={project.image_url} 
-                        alt={project.title} 
+                        alt={project.alt_text || project.title} 
                         className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
+                      
                       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
                       
-                      {/* Hide Title in Micro-Grid Mode */}
                       {!isGridMode && (
                         <div className="absolute bottom-0 left-0 p-6 w-full">
                            <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded mb-2 inline-block">
@@ -210,6 +206,8 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
                 <motion.img
                   layoutId={`image-${selectedProject.id}`}
                   src={selectedProject.image_url}
+                  // 👇 3. UPDATED: Modal image also uses SEO text
+                  alt={selectedProject.alt_text || selectedProject.title}
                   className="max-h-[85vh] w-auto rounded-lg shadow-2xl border border-zinc-800 object-contain"
                 />
               )}
