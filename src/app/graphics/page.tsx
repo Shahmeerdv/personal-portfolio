@@ -16,13 +16,13 @@ export default function GraphicsPage() {
             </Link>
         </div>
 
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">THE ARCHIVE</h1>
+        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">Graphics ARCHIVE</h1>
         <p className="text-zinc-400 mb-8">Complete collection of commercial and personal works.</p>
 
         {/* --- NAVIGATION BUTTON: Jump to Software --- */}
         <div className="flex justify-center">
             <Link 
-                href="/#software" 
+                href="/software" 
                 className="group flex flex-row items-center justify-center gap-2 px-5 py-3 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 hover:border-blue-500/50 transition-all duration-300"
             >
                 {/* Blue Icon for Software */}

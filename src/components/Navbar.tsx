@@ -32,7 +32,7 @@ export default function Navbar() {
               pathname === "/" ? "text-white" : "text-zinc-400 hover:text-white"
             }`}
           >
-            Work
+            Home
           </Link>
           
           <Link 

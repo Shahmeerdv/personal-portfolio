@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Palette, Code } from "lucide-react";
 import ProjectGallery from "@/components/ProjectGallery";
-import SoftwareShowcase from "@/components/SoftwareShowcase";
+import SoftwareShowcase from "@/components/SoftwareShowcase"; // 👈 1. Imported the component
 
 export default function Home() {
   return (
@@ -27,8 +27,7 @@ export default function Home() {
           A collection of high-performance software and avant-garde graphic design.
         </p>
 
-        {/* --- NAVIGATION TILES (Bento Style Buttons) --- */}
-        {/* --- NAVIGATION TILES (Rectangular & Compact) --- */}
+        {/* --- NAVIGATION TILES --- */}
         <div className="grid grid-cols-2 gap-3 max-w-xs mx-auto">
           
           {/* Graphics Button */}
@@ -46,7 +45,7 @@ export default function Home() {
 
           {/* Software Button */}
           <Link 
-            href="#software" 
+            href="/software"
             className="group flex flex-row items-center justify-center gap-2 px-4 py-3 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 hover:border-zinc-700 transition-all duration-300"
           >
             <div className="p-1.5 rounded-full bg-blue-500/10 text-blue-400 group-hover:scale-110 transition-transform">
@@ -60,17 +59,17 @@ export default function Home() {
         </div>
       </div>
 
-      {/* --- 1. GRAPHICS SECTION (Teaser) --- */}
-      {/* We keep the teaser here for people who just scroll naturally */}
-      <div className="mb-24">
+      {/* --- GRAPHICS SLIDER --- */}
+      <div className="mb-10">
         <ProjectGallery isHome={true} />
       </div>
       
-      {/* --- 2. SOFTWARE SECTION --- */}
-      <div id="software" className="scroll-mt-24">
-        <SoftwareShowcase />
+      {/* --- SOFTWARE SECTION --- */}
+      {/* 👇 2. Added Software Showcase here */}
+      <div className="w-full">
+         <SoftwareShowcase showTitle={true} />
       </div>
-      
+
     </main>
   );
 }

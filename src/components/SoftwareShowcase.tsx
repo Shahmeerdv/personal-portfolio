@@ -2,18 +2,25 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Github, X, Layers } from "lucide-react";
-
-// 👇 UPDATED IMPORT: pointing to your file
+import Link from "next/link"; // <--- Import Link
 import { softwareProjects } from "@/lib/softwareProjects";
 
-export default function SoftwareShowcase() {
+export default function SoftwareShowcase({ showTitle = true }: { showTitle?: boolean }) {
   const [selected, setSelected] = useState<(typeof softwareProjects)[0] | null>(null);
 
   return (
     <section className="py-20 px-4 max-w-7xl mx-auto">
-      <h2 className="text-3xl font-bold text-white mb-10 border-l-4 border-blue-500 pl-4">
-        Software Projects
-      </h2>
+      
+      {/* 👇 UPDATED: Title is now a Link to the full page */}
+      {showTitle && (
+        <div className="mb-10 border-l-4 border-blue-500 pl-4">
+          <Link href="/software" className="group inline-block">
+            <h2 className="text-3xl font-bold text-white group-hover:text-blue-400 transition-colors cursor-pointer">
+              Software Projects
+            </h2>
+          </Link>
+        </div>
+      )}
 
       {/* --- THE GRID --- */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -56,16 +63,16 @@ export default function SoftwareShowcase() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm"
-            onClick={() => setSelected(null)} // Click outside to close
+            onClick={() => setSelected(null)} 
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()} // Prevent close on inner click
+              onClick={(e) => e.stopPropagation()} 
               className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
             >
-              {/* Header */}
+              {/* Modal Header */}
               <div className="sticky top-0 z-10 flex justify-between items-center p-6 bg-zinc-900 border-b border-zinc-800">
                 <h3 className="text-2xl font-bold text-white">{selected.title}</h3>
                 <button 
@@ -77,7 +84,6 @@ export default function SoftwareShowcase() {
               </div>
 
               <div className="p-6">
-                {/* Description & Link */}
                 <div className="flex flex-col md:flex-row gap-6 mb-8">
                   <div className="flex-1">
                     <p className="text-zinc-300 leading-relaxed mb-4">
@@ -92,29 +98,35 @@ export default function SoftwareShowcase() {
                     </div>
                   </div>
                   <div>
-                    <a
-                      href={selected.github}
-                      target="_blank"
-                      className="flex items-center gap-2 px-6 py-3 bg-white text-black font-bold rounded-lg hover:bg-zinc-200 transition-colors"
-                    >
-                      <Github size={20} /> View Source
-                    </a>
+                    {selected.github && (
+                      <a
+                        href={selected.github}
+                        target="_blank"
+                        className="flex items-center gap-2 px-6 py-3 bg-white text-black font-bold rounded-lg hover:bg-zinc-200 transition-colors"
+                      >
+                        <Github size={20} /> View Source
+                      </a>
+                    )}
                   </div>
                 </div>
 
-                {/* Screenshots Grid */}
-                <h4 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-4">Project Gallery</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {selected.screenshots.map((shot, index) => (
-                    <div key={index} className="relative aspect-video rounded-lg overflow-hidden border border-zinc-800 group">
-                      <img 
-                        src={shot} 
-                        alt={`Screenshot ${index + 1}`} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
+                {/* Screenshots Gallery in Modal */}
+                {selected.screenshots && selected.screenshots.length > 0 && (
+                  <>
+                    <h4 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-4">Project Gallery</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {selected.screenshots.map((shot, index) => (
+                        <div key={index} className="relative aspect-video rounded-lg overflow-hidden border border-zinc-800 group">
+                          <img 
+                            src={shot} 
+                            alt={`${selected.title} screenshot ${index + 1}`} 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </>
+                )}
               </div>
             </motion.div>
           </motion.div>
