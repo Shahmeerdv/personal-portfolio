@@ -24,7 +24,7 @@ export default function ProjectGallery({ isHome = false }: { isHome?: boolean })
   const [isGridMode, setIsGridMode] = useState(false);
 
   const [filter, setFilter] = useState("All");
-  const categories = ["All", "Cricket", "Football", "Lacrosse", "Other", "Personal"];
+  const categories = ["All", "Cricket", "Football", "Lacrosse", "Other",];
 
   useEffect(() => {
     const fetchProjects = async () => {
