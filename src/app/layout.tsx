@@ -7,8 +7,18 @@ import Footer from "@/components/Footer"; // Import Footer
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Creative Portfolio",
-  description: "Next-gen Digital Portfolio",
+  title: "Shahmeer | Visual & Code",
+  description: "Portfolio of Shahmeer - Graphic Designer & Software Developer. Specializing in high-performance software and avant-garde graphics.",
+  
+  // This helps social networks find the right title/description
+  openGraph: {
+    title: "Shahmeer | Visual & Code",
+    description: "Graphic Designer & Software Developer.",
+    url: "https://shahmeer.tech",
+    siteName: "Shahmeer Portfolio",
+    locale: "en_US",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
