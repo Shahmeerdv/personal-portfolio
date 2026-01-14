@@ -2,8 +2,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase"; 
 import SpotlightCard from "@/components/SpotlightCard";
-import { motion, AnimatePresence } from "framer-motion"; 
-import { X, ArrowRight, LayoutGrid, StretchHorizontal, ChevronLeft, ChevronRight } from "lucide-react"; 
+import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion"; 
+import { X, LayoutGrid, StretchHorizontal, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react"; 
 import Link from "next/link"; 
 
 interface Project {
@@ -21,24 +21,6 @@ interface GalleryProps {
   filterCategory?: string;
 }
 
-// 👇 1. Define Simple Slide Animation Variants
-const slideVariants = {
-  enter: (direction: number) => ({
-    x: direction > 0 ? 300 : -300, // Slide in from...
-    opacity: 0
-  }),
-  center: {
-    zIndex: 1,
-    x: 0,
-    opacity: 1
-  },
-  exit: (direction: number) => ({
-    zIndex: 0,
-    x: direction < 0 ? 300 : -300, // Slide out to...
-    opacity: 0
-  })
-};
-
 export default function ProjectGallery({ 
   isHome = false, 
   title = "Graphics Projects", 
@@ -51,8 +33,11 @@ export default function ProjectGallery({
   const [isGridMode, setIsGridMode] = useState(false);
   const [filter, setFilter] = useState("All");
   
-  // 👇 2. Add Direction State (-1 for prev, 1 for next)
-  const [[page, direction], setPage] = useState([0, 0]); 
+  // We use this to force a re-render animation when index changes
+  const [direction, setDirection] = useState(0);
+
+  // Motion Value for the drag x position
+  const x = useMotionValue(0);
 
   const categories = ["All", "Cricket", "Football", "Lacrosse", "Other", "Personal"];
 
@@ -75,7 +60,6 @@ export default function ProjectGallery({
   });
 
   let displayProjects = isHome ? projects.slice(0, 6) : filteredProjects;
-
   if (isHome && displayProjects.length > 0 && displayProjects.length < 6) {
     const missingCount = 6 - displayProjects.length;
     for (let i = 0; i < missingCount; i++) {
@@ -83,27 +67,26 @@ export default function ProjectGallery({
     }
   }
 
-  // NAVIGATION LOGIC
+  // --- NAVIGATION HELPERS ---
   const navList = isHome ? projects.slice(0, 6) : filteredProjects;
 
-  const navigateLightbox = useCallback((newDirection: number) => {
-    if (!selectedProject) return;
+  const getProject = useCallback((offset: number) => {
+    if (!selectedProject) return null;
     const currentIndex = navList.findIndex(p => p.id === selectedProject.id);
-    if (currentIndex === -1) return;
-
-    let newIndex;
-    if (newDirection === 1) {
-      newIndex = (currentIndex + 1) % navList.length;
-    } else {
-      newIndex = (currentIndex - 1 + navList.length) % navList.length;
-    }
-    
-    // 👇 3. Update both Project AND Direction
-    setPage([newIndex, newDirection]);
-    setSelectedProject(navList[newIndex]);
+    if (currentIndex === -1) return null;
+    const newIndex = (currentIndex + offset + navList.length) % navList.length;
+    return navList[newIndex];
   }, [selectedProject, navList]);
 
-  // KEYBOARD LISTENERS
+  const navigateLightbox = useCallback((newDirection: number) => {
+    const nextProj = getProject(newDirection);
+    if (!nextProj) return;
+    setDirection(newDirection);
+    setSelectedProject(nextProj);
+    x.set(0); // Reset drag position instantly for the new slide
+  }, [getProject, x]);
+
+  // Keyboard
   useEffect(() => {
     if (!selectedProject) return;
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -115,14 +98,12 @@ export default function ProjectGallery({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedProject, navigateLightbox]);
 
-  // SWIPE HANDLER
-  const swipeConfidenceThreshold = 10000;
-  const swipePower = (offset: number, velocity: number) => {
-    return Math.abs(offset) * velocity;
-  };
-
   if (loading) return <div className="text-center text-zinc-500 py-10">Loading...</div>;
   if (projects.length === 0) return null;
+
+  // Prepare Neighbors for the Carousel
+  const prevProject = getProject(-1);
+  const nextProject = getProject(1);
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 mb-12">
@@ -135,25 +116,14 @@ export default function ProjectGallery({
               {title}
             </h2>
           </Link>
-
-          <button 
-            onClick={() => setIsGridMode(!isGridMode)}
-            className="md:hidden p-2.5 rounded-full bg-emerald-500 text-black hover:bg-emerald-400 transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)] active:scale-95"
-          >
+          <button onClick={() => setIsGridMode(!isGridMode)} className="md:hidden p-2.5 rounded-full bg-emerald-500 text-black hover:bg-emerald-400 transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)] active:scale-95">
             {isGridMode ? <StretchHorizontal size={20} strokeWidth={2.5} /> : <LayoutGrid size={20} strokeWidth={2.5} />}
           </button>
         </div>
-        
         {!isHome && (
           <div className="flex flex-wrap gap-2 w-full md:w-auto">
             {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setFilter(cat)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  filter === cat ? "bg-white text-black" : "border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-600"
-                }`}
-              >
+              <button key={cat} onClick={() => setFilter(cat)} className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filter === cat ? "bg-white text-black" : "border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-600"}`}>
                 {cat}
               </button>
             ))}
@@ -169,24 +139,12 @@ export default function ProjectGallery({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.2 }}
-          className={`
-            ${"md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 md:pb-0"}
-            ${isGridMode 
-                ? "grid grid-cols-4 gap-2" 
-                : isHome 
-                  ? "flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 scrollbar-hide" 
-                  : "grid grid-cols-1 gap-6" 
-            }
-          `}
+          className={`${"md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 md:pb-0"} ${isGridMode ? "grid grid-cols-4 gap-2" : isHome ? "flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 scrollbar-hide" : "grid grid-cols-1 gap-6"}`}
         >
           {displayProjects.map((project, index) => {
             const isArchiveLink = isHome && index === 5;
             return (
-              <div 
-                key={`${project.id}-${index}`} 
-                onClick={() => !isArchiveLink && setSelectedProject(project)}
-                className={`${isHome && !isGridMode ? "min-w-[85vw] md:min-w-0 snap-center" : "min-w-0"}`}
-              >
+              <div key={`${project.id}-${index}`} onClick={() => !isArchiveLink && setSelectedProject(project)} className={`${isHome && !isGridMode ? "min-w-[85vw] md:min-w-0 snap-center" : "min-w-0"}`}>
                 {isArchiveLink ? (
                   <Link href="/graphics" className="block relative w-full h-full group">
                     <SpotlightCard className="aspect-[4/5] overflow-hidden p-0 border-zinc-800 bg-black relative">
@@ -203,12 +161,7 @@ export default function ProjectGallery({
                   <SpotlightCard className="group aspect-[4/5] overflow-hidden p-0 border-zinc-800 bg-black cursor-pointer relative">
                     {project.image_url && (
                       <div className="relative h-full w-full">
-                        <motion.img 
-                          layoutId={`image-${project.id}-${isGridMode ? 'grid' : 'list'}`} 
-                          src={project.image_url} 
-                          alt={project.alt_text || project.title} 
-                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        />
+                        <motion.img layoutId={`image-${project.id}-${isGridMode ? 'grid' : 'list'}`} src={project.image_url} alt={project.alt_text || project.title} className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"/>
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
                         {!isGridMode && (
                           <div className="absolute bottom-0 left-0 p-6 w-full">
@@ -226,7 +179,7 @@ export default function ProjectGallery({
         </motion.div>
       </AnimatePresence>
 
-      {/* Modal */}
+      {/* --- CAROUSEL MODAL --- */}
       <AnimatePresence>
         {selectedProject && (
           <motion.div
@@ -234,70 +187,83 @@ export default function ProjectGallery({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSelectedProject(null)} 
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 touch-none"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm p-4 overflow-hidden" // overflow-hidden is important
           >
-            {/* Close Button */}
             <button className="fixed top-5 right-5 text-white/50 hover:text-white z-[60] p-2 bg-black/20 backdrop-blur-md rounded-full transition-all hover:bg-black/50">
               <X size={32} />
             </button>
 
-            {/* Image Container */}
+            {/* Container for the draggable strip */}
             <div 
-              className="relative w-full max-w-5xl max-h-[90vh] flex items-center justify-center group/modal" 
+              className="relative w-full h-full flex items-center justify-center" 
               onClick={(e) => e.stopPropagation()}
             >
-                
-              {/* Left Arrow */}
-              <button 
-                onClick={(e) => { e.stopPropagation(); navigateLightbox(-1); }}
-                className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full text-white/70 bg-black/30 backdrop-blur-sm border border-white/10 transition-all duration-300 hover:bg-black/70 hover:text-white hover:border-white/30 hover:scale-110 active:scale-95 hidden md:flex items-center justify-center"
-              >
+              
+              {/* Arrows */}
+              <button onClick={(e) => { e.stopPropagation(); navigateLightbox(-1); }} className="absolute left-2 md:left-4 z-50 p-3 rounded-full text-white/70 bg-black/30 backdrop-blur-sm border border-white/10 transition-all duration-300 hover:bg-black/70 hover:text-white hover:border-white/30 hover:scale-110 active:scale-95 hidden md:flex items-center justify-center">
                 <ChevronLeft size={32} strokeWidth={1.5} />
               </button>
-
-              {/* Right Arrow */}
-              <button 
-                onClick={(e) => { e.stopPropagation(); navigateLightbox(1); }}
-                className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full text-white/70 bg-black/30 backdrop-blur-sm border border-white/10 transition-all duration-300 hover:bg-black/70 hover:text-white hover:border-white/30 hover:scale-110 active:scale-95 hidden md:flex items-center justify-center"
-              >
+              <button onClick={(e) => { e.stopPropagation(); navigateLightbox(1); }} className="absolute right-2 md:right-4 z-50 p-3 rounded-full text-white/70 bg-black/30 backdrop-blur-sm border border-white/10 transition-all duration-300 hover:bg-black/70 hover:text-white hover:border-white/30 hover:scale-110 active:scale-95 hidden md:flex items-center justify-center">
                 <ChevronRight size={32} strokeWidth={1.5} />
               </button>
 
-              {/* 👇 4. IMAGE WITH CLEAN SLIDE ANIMATION */}
-              {selectedProject.image_url && (
-                <motion.img
-                  key={selectedProject.id} // Forces animation when image changes
-                  
-                  // Variants for simple slide
-                  custom={direction}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{
-                    x: { type: "spring", stiffness: 300, damping: 30 },
-                    opacity: { duration: 0.2 }
-                  }}
+              {/* 👇 THE DRAGGABLE STRIP */}
+              <motion.div
+                className="relative flex items-center justify-center w-full max-w-5xl h-[85vh]"
+                style={{ x }} // Connect motion value
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }} // We handle snap manually
+                dragElastic={0.2} // Feel resistance
+                onDragEnd={(e, { offset, velocity }) => {
+                  const swipe = Math.abs(offset.x) * velocity.x;
+                  const threshold = 10000;
+                  // If swiped enough, navigate. Else bounce back (x resets via key change or manual set)
+                  if (swipe < -threshold || offset.x < -100) navigateLightbox(1);
+                  else if (swipe > threshold || offset.x > 100) navigateLightbox(-1);
+                  else x.set(0); // Bounce back
+                }}
+              >
+                
+                {/* PREV Image (Left) */}
+                {prevProject && (
+                  <div className="absolute left-[-100%] top-0 w-full h-full flex items-center justify-center px-4">
+                    <img 
+                      src={prevProject.image_url || ""} 
+                      className="max-h-full max-w-full rounded-lg object-contain opacity-50 scale-95" 
+                      alt="prev" 
+                    />
+                  </div>
+                )}
 
-                  // Swipe logic
-                  src={selectedProject.image_url}
-                  alt={selectedProject.alt_text || selectedProject.title}
-                  drag="x"
-                  dragConstraints={{ left: 0, right: 0 }}
-                  dragElastic={1}
-                  onDragEnd={(e, { offset, velocity }) => {
-                    const swipe = swipePower(offset.x, velocity.x);
-                    if (swipe < -swipeConfidenceThreshold) navigateLightbox(1);
-                    else if (swipe > swipeConfidenceThreshold) navigateLightbox(-1);
-                  }}
-                  className="max-h-[85vh] w-auto rounded-lg shadow-2xl border border-zinc-800 object-contain cursor-grab active:cursor-grabbing"
-                />
-              )}
+                {/* CURRENT Image (Center) */}
+                <div className="relative w-full h-full flex items-center justify-center px-4">
+                  <motion.img
+                    key={selectedProject.id} // Re-renders cleanly
+                    initial={{ scale: 0.95, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                    src={selectedProject.image_url || ""}
+                    className="max-h-full max-w-full rounded-lg shadow-2xl border border-zinc-800 object-contain cursor-grab active:cursor-grabbing"
+                    alt={selectedProject.title}
+                  />
+                </div>
+
+                {/* NEXT Image (Right) */}
+                {nextProject && (
+                  <div className="absolute left-[100%] top-0 w-full h-full flex items-center justify-center px-4">
+                    <img 
+                      src={nextProject.image_url || ""} 
+                      className="max-h-full max-w-full rounded-lg object-contain opacity-50 scale-95" 
+                      alt="next" 
+                    />
+                  </div>
+                )}
+                
+              </motion.div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-
     </div>
   );
 }
