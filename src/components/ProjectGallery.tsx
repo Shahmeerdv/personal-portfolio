@@ -21,6 +21,24 @@ interface GalleryProps {
   filterCategory?: string;
 }
 
+// 👇 1. Define Simple Slide Animation Variants
+const slideVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 300 : -300, // Slide in from...
+    opacity: 0
+  }),
+  center: {
+    zIndex: 1,
+    x: 0,
+    opacity: 1
+  },
+  exit: (direction: number) => ({
+    zIndex: 0,
+    x: direction < 0 ? 300 : -300, // Slide out to...
+    opacity: 0
+  })
+};
+
 export default function ProjectGallery({ 
   isHome = false, 
   title = "Graphics Projects", 
@@ -32,6 +50,10 @@ export default function ProjectGallery({
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isGridMode, setIsGridMode] = useState(false);
   const [filter, setFilter] = useState("All");
+  
+  // 👇 2. Add Direction State (-1 for prev, 1 for next)
+  const [[page, direction], setPage] = useState([0, 0]); 
+
   const categories = ["All", "Cricket", "Football", "Lacrosse", "Other", "Personal"];
 
   useEffect(() => {
@@ -64,17 +86,20 @@ export default function ProjectGallery({
   // NAVIGATION LOGIC
   const navList = isHome ? projects.slice(0, 6) : filteredProjects;
 
-  const navigateLightbox = useCallback((direction: "next" | "prev") => {
+  const navigateLightbox = useCallback((newDirection: number) => {
     if (!selectedProject) return;
     const currentIndex = navList.findIndex(p => p.id === selectedProject.id);
     if (currentIndex === -1) return;
 
     let newIndex;
-    if (direction === "next") {
+    if (newDirection === 1) {
       newIndex = (currentIndex + 1) % navList.length;
     } else {
       newIndex = (currentIndex - 1 + navList.length) % navList.length;
     }
+    
+    // 👇 3. Update both Project AND Direction
+    setPage([newIndex, newDirection]);
     setSelectedProject(navList[newIndex]);
   }, [selectedProject, navList]);
 
@@ -82,8 +107,8 @@ export default function ProjectGallery({
   useEffect(() => {
     if (!selectedProject) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") navigateLightbox("next");
-      if (e.key === "ArrowLeft") navigateLightbox("prev");
+      if (e.key === "ArrowRight") navigateLightbox(1);
+      if (e.key === "ArrowLeft") navigateLightbox(-1);
       if (e.key === "Escape") setSelectedProject(null);
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -136,7 +161,7 @@ export default function ProjectGallery({
         )}
       </div>
 
-      {/* Grid with Fade Animation */}
+      {/* Grid */}
       <AnimatePresence mode="wait">
         <motion.div
           key={isGridMode ? "grid-view" : "list-view"} 
@@ -211,39 +236,50 @@ export default function ProjectGallery({
             onClick={() => setSelectedProject(null)} 
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 touch-none"
           >
-            {/* Close Button (Top Right corner of screen) */}
+            {/* Close Button */}
             <button className="fixed top-5 right-5 text-white/50 hover:text-white z-[60] p-2 bg-black/20 backdrop-blur-md rounded-full transition-all hover:bg-black/50">
               <X size={32} />
             </button>
 
-            {/* Image Container (Relative parent for arrows) */}
+            {/* Image Container */}
             <div 
               className="relative w-full max-w-5xl max-h-[90vh] flex items-center justify-center group/modal" 
               onClick={(e) => e.stopPropagation()}
             >
                 
-              {/* 👇 1. LEFT NAVIGATION BUTTON (Moved Inside & Styled) */}
+              {/* Left Arrow */}
               <button 
-                onClick={(e) => { e.stopPropagation(); navigateLightbox("prev"); }}
-                // Cool, sleek styling:
+                onClick={(e) => { e.stopPropagation(); navigateLightbox(-1); }}
                 className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full text-white/70 bg-black/30 backdrop-blur-sm border border-white/10 transition-all duration-300 hover:bg-black/70 hover:text-white hover:border-white/30 hover:scale-110 active:scale-95 hidden md:flex items-center justify-center"
               >
                 <ChevronLeft size={32} strokeWidth={1.5} />
               </button>
 
-              {/* 👇 2. RIGHT NAVIGATION BUTTON (Moved Inside & Styled) */}
+              {/* Right Arrow */}
               <button 
-                onClick={(e) => { e.stopPropagation(); navigateLightbox("next"); }}
-                // Cool, sleek styling:
+                onClick={(e) => { e.stopPropagation(); navigateLightbox(1); }}
                 className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full text-white/70 bg-black/30 backdrop-blur-sm border border-white/10 transition-all duration-300 hover:bg-black/70 hover:text-white hover:border-white/30 hover:scale-110 active:scale-95 hidden md:flex items-center justify-center"
               >
                 <ChevronRight size={32} strokeWidth={1.5} />
               </button>
 
+              {/* 👇 4. IMAGE WITH CLEAN SLIDE ANIMATION */}
               {selectedProject.image_url && (
                 <motion.img
-                  key={selectedProject.id}
-                  layoutId={`image-${selectedProject.id}-${isGridMode ? 'grid' : 'list'}`}
+                  key={selectedProject.id} // Forces animation when image changes
+                  
+                  // Variants for simple slide
+                  custom={direction}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{
+                    x: { type: "spring", stiffness: 300, damping: 30 },
+                    opacity: { duration: 0.2 }
+                  }}
+
+                  // Swipe logic
                   src={selectedProject.image_url}
                   alt={selectedProject.alt_text || selectedProject.title}
                   drag="x"
@@ -251,8 +287,8 @@ export default function ProjectGallery({
                   dragElastic={1}
                   onDragEnd={(e, { offset, velocity }) => {
                     const swipe = swipePower(offset.x, velocity.x);
-                    if (swipe < -swipeConfidenceThreshold) navigateLightbox("next");
-                    else if (swipe > swipeConfidenceThreshold) navigateLightbox("prev");
+                    if (swipe < -swipeConfidenceThreshold) navigateLightbox(1);
+                    else if (swipe > swipeConfidenceThreshold) navigateLightbox(-1);
                   }}
                   className="max-h-[85vh] w-auto rounded-lg shadow-2xl border border-zinc-800 object-contain cursor-grab active:cursor-grabbing"
                 />
