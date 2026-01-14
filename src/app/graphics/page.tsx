@@ -41,7 +41,7 @@ export default function GraphicsPage() {
             </Link>
         </div>
 
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">Graphics ARCHIVE</h1>
+        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">GRAPHICS ARCHIVE</h1>
         <p className="text-zinc-400 mb-8">Complete collection of commercial and personal works.</p>
 
         {/* --- NAVIGATION BUTTON: Jump to Software --- */}
