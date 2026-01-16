@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer"; 
-import BackgroundBlobs from "@/components/BackgroundBlobs"; // 👈 1. Import the blobs
+import BackgroundSpotlight from "@/components/BackgroundSpotlight";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,8 +30,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} antialiased bg-black text-white selection:bg-white selection:text-black`}>
         
-       /* {/* 👇 2. Add the background component here */}
-        <BackgroundBlobs />
+       {/* 👇 2. Add the background component here */}
+        <BackgroundSpotlight />
         
         <Navbar />
         {children}
