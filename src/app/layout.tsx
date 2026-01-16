@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer"; // Import Footer
+import Footer from "@/components/Footer"; 
+import BackgroundBlobs from "@/components/BackgroundBlobs"; // 👈 1. Import the blobs
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -10,7 +11,6 @@ export const metadata: Metadata = {
   title: "Shahmeer | Visual & Code",
   description: "Portfolio of Shahmeer - Graphic Designer & Software Developer. Specializing in high-performance software and avant-garde graphics.",
   
-  // This helps social networks find the right title/description
   openGraph: {
     title: "Shahmeer | Visual & Code",
     description: "Graphic Designer & Software Developer.",
@@ -29,9 +29,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased bg-black text-white selection:bg-white selection:text-black`}>
+        
+        {/* 👇 2. Add the background component here */}
+        <BackgroundBlobs />
+        
         <Navbar />
         {children}
-        <Footer /> {/* Add Footer Here */}
+        <Footer /> 
       </body>
     </html>
   );

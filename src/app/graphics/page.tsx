@@ -1,11 +1,12 @@
 "use client";
-import { useState, useEffect } from "react"; 
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Code, ChevronLeft, ArrowUp } from "lucide-react"; 
+import { Code, ChevronLeft, ArrowUp } from "lucide-react";
 import ProjectGallery from "@/components/ProjectGallery";
+import { motion } from "framer-motion"; // 👈 1. Import Framer Motion
 
 export default function GraphicsPage() {
-  
+
   const [showTopBtn, setShowTopBtn] = useState(false);
 
   useEffect(() => {
@@ -29,45 +30,62 @@ export default function GraphicsPage() {
   };
 
   return (
-    <main className="min-h-screen pt-32 pb-20 bg-black relative">
-      
+    <main className="min-h-screen pt-32 pb-20 ">
+
       {/* Header Section */}
       <div className="relative max-w-7xl mx-auto px-4 mb-12 text-center">
-        
+
         {/* Back to Home (Desktop Only) */}
-        <div className="absolute left-4 top-2 hidden md:block">
-            <Link href="/" className="flex items-center gap-1 text-zinc-500 hover:text-white transition-colors text-sm font-medium">
-                <ChevronLeft size={16} /> Back
-            </Link>
+        {/* 👇 Added 'z-50' to force it on top of overlapping layers */}
+        <div className="absolute left-4 top-2 hidden md:block z-50">
+          <Link href="/" className="flex items-center gap-1 text-zinc-500 hover:text-white transition-colors text-sm font-medium">
+            <ChevronLeft size={16} /> Back
+          </Link>
         </div>
 
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">GRAPHICS ARCHIVE</h1>
-        <p className="text-zinc-400 mb-8">Complete collection of commercial and personal works.</p>
+        {/* 👇 2. ANIMATED TITLE */}
+        <motion.h1
+          initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
+          className="text-[9vw] md:text-5xl font-bold text-white mb-4 tracking-tight whitespace-nowrap"
+        >
+          GRAPHICS ARCHIVE
+        </motion.h1>
+
+        {/* 👇 3. ANIMATED SUBTITLE */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.7, delay: 0.3 }}
+          className="text-zinc-400 mb-8"
+        >
+          Complete collection of commercial and personal works.
+        </motion.p>
 
         {/* --- NAVIGATION BUTTON: Jump to Software --- */}
         <div className="flex justify-center">
-            <Link 
-                href="/software" 
-                className="group flex flex-row items-center justify-center gap-2 px-5 py-3 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 hover:border-blue-500/50 transition-all duration-300"
-            >
-                <div className="p-1.5 rounded-full bg-blue-500/10 text-blue-400 group-hover:scale-110 transition-transform">
-                    <Code size={18} />
-                </div>
-                <span className="text-sm font-bold text-white tracking-wide">
-                    View Software Projects
-                </span>
-            </Link>
+          <Link
+            href="/software"
+            className="group flex flex-row items-center justify-center gap-2 px-5 py-3 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 hover:border-blue-500/50 transition-all duration-300"
+          >
+            <div className="p-1.5 rounded-full bg-blue-500/10 text-blue-400 group-hover:scale-110 transition-transform">
+              <Code size={18} />
+            </div>
+            <span className="text-sm font-bold text-white tracking-wide">
+              View Software Projects
+            </span>
+          </Link>
         </div>
 
       </div>
-        
+
       <ProjectGallery isHome={false} />
 
-      {/* 👇 UPDATED: Minimal Button on Right */}
-      <div 
-        className={`fixed bottom-8 right-6 z-50 transition-all duration-500 transform ${
-          showTopBtn ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0 pointer-events-none"
-        }`}
+      {/* Minimal Button on Right */}
+      <div
+        className={`fixed bottom-8 right-6 z-50 transition-all duration-500 transform ${showTopBtn ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0 pointer-events-none"
+          }`}
       >
         <button
           onClick={goToTop}
@@ -77,7 +95,7 @@ export default function GraphicsPage() {
           <ArrowUp size={24} strokeWidth={2.5} />
         </button>
       </div>
-      
+
     </main>
   );
 }

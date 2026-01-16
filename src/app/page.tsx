@@ -1,11 +1,13 @@
+"use client"; // 👈 1. Required for animations
 import Link from "next/link";
 import { Palette, Code } from "lucide-react";
 import ProjectGallery from "@/components/ProjectGallery";
-import SoftwareShowcase from "@/components/SoftwareShowcase"; // 👈 1. Imported the component
+import SoftwareShowcase from "@/components/SoftwareShowcase"; 
+import { motion } from "framer-motion"; // 👈 2. Import Framer Motion
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col pt-32 pb-20 bg-black">
+    <main className="min-h-screen flex flex-col pt-32 pb-20 ">
       
       {/* --- HERO SECTION --- */}
       <div className="text-center mb-20 px-4 max-w-4xl mx-auto">
@@ -18,10 +20,15 @@ export default function Home() {
            </span>
         </div>
 
-        {/* Main Title */}
-        <h1 className="text-5xl md:text-8xl font-bold tracking-tighter bg-linear-to-b from-white via-white to-zinc-600 bg-clip-text text-transparent mb-6">
+        {/* 👇 3. ANIMATED TITLE (Cinematic Blur) */}
+        <motion.h1 
+          initial={{ opacity: 0, y: 20, filter: "blur(10px)" }} 
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }} 
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-[11vw] md:text-8xl font-bold tracking-tighter bg-linear-to-b from-white via-white to-zinc-600 bg-clip-text text-transparent mb-6 whitespace-nowrap"
+        >
           VISUAL & CODE
-        </h1>
+        </motion.h1>
         
         <p className="text-zinc-400 text-lg max-w-xl mx-auto mb-10 leading-relaxed">
           A collection of high-performance software and avant-garde graphic design.
@@ -65,7 +72,6 @@ export default function Home() {
       </div>
       
       {/* --- SOFTWARE SECTION --- */}
-      {/* 👇 2. Added Software Showcase here */}
       <div className="w-full">
          <SoftwareShowcase showTitle={true} />
       </div>
