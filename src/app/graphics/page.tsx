@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Code, ChevronLeft, ArrowUp } from "lucide-react";
 import ProjectGallery from "@/components/ProjectGallery";
-import { motion } from "framer-motion"; // 👈 1. Import Framer Motion
+import { motion } from "framer-motion"; 
 
 export default function GraphicsPage() {
 
@@ -35,35 +35,34 @@ export default function GraphicsPage() {
       {/* Header Section */}
       <div className="relative max-w-7xl mx-auto px-4 mb-12 text-center">
 
-        {/* Back to Home (Desktop Only) */}
-        {/* 👇 Added 'z-50' to force it on top of overlapping layers */}
+        {/* Back to Home */}
         <div className="absolute left-4 top-2 hidden md:block z-50">
           <Link href="/" className="flex items-center gap-1 text-zinc-500 hover:text-white transition-colors text-sm font-medium">
             <ChevronLeft size={16} /> Back
           </Link>
         </div>
 
-        {/* 👇 2. ANIMATED TITLE */}
+        {/* 👇 OPTIMIZED: No Blur, Faster Duration */}
         <motion.h1
-          initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
           className="text-[9vw] md:text-5xl font-bold text-white mb-4 tracking-tight whitespace-nowrap"
         >
           GRAPHICS ARCHIVE
         </motion.h1>
 
-        {/* 👇 3. ANIMATED SUBTITLE */}
+        {/* 👇 OPTIMIZED SUBTITLE */}
         <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.7, delay: 0.3 }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
           className="text-zinc-400 mb-8"
         >
           Complete collection of commercial and personal works.
         </motion.p>
 
-        {/* --- NAVIGATION BUTTON: Jump to Software --- */}
+        {/* --- NAVIGATION BUTTON --- */}
         <div className="flex justify-center">
           <Link
             href="/software"
@@ -82,7 +81,7 @@ export default function GraphicsPage() {
 
       <ProjectGallery isHome={false} />
 
-      {/* Minimal Button on Right */}
+      {/* Back to Top Button */}
       <div
         className={`fixed bottom-8 right-6 z-50 transition-all duration-500 transform ${showTopBtn ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0 pointer-events-none"
           }`}

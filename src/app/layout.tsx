@@ -30,7 +30,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} antialiased bg-black text-white selection:bg-white selection:text-black`}>
         
-        {/* 👇 2. Add the background component here */}
+       /* {/* 👇 2. Add the background component here */}
         <BackgroundBlobs />
         
         <Navbar />

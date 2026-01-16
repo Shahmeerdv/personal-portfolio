@@ -1,9 +1,9 @@
-"use client"; // 👈 1. Required for animations
+"use client"; 
 import Link from "next/link";
 import { Palette, Code } from "lucide-react";
 import ProjectGallery from "@/components/ProjectGallery";
 import SoftwareShowcase from "@/components/SoftwareShowcase"; 
-import { motion } from "framer-motion"; // 👈 2. Import Framer Motion
+import { motion } from "framer-motion"; 
 
 export default function Home() {
   return (
@@ -20,11 +20,11 @@ export default function Home() {
            </span>
         </div>
 
-        {/* 👇 3. ANIMATED TITLE (Cinematic Blur) */}
+        {/* 👇 OPTIMIZED: No Blur, Faster Duration */}
         <motion.h1 
-          initial={{ opacity: 0, y: 20, filter: "blur(10px)" }} 
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }} 
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.5, ease: "easeOut" }}
           className="text-[11vw] md:text-8xl font-bold tracking-tighter bg-linear-to-b from-white via-white to-zinc-600 bg-clip-text text-transparent mb-6 whitespace-nowrap"
         >
           VISUAL & CODE
