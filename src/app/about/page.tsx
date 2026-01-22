@@ -9,6 +9,7 @@ const clients = [
   { name: "PCB", location: "Pakistan", logo: "/logos/pcb.png" },
   { name: "Big Star Creations", location: "UK", logo: "/logos/big-star.png" },
   { name: "Zuju", location: "International", logo: "/logos/zuju.png" },
+  { name: "DigiBolt", location: "Pakistan", logo: "/logos/digibolt.png" },
 ];
 
 export default function AboutPage() {
@@ -98,7 +99,7 @@ export default function AboutPage() {
         <h3 className="text-2xl font-bold text-white mb-8">Trusted By</h3>
         
         {/* Updated Grid: 3 cols on mobile, 5 on desktop */}
-        <div className="grid grid-cols-3 lg:grid-cols-5 gap-x-2 md:gap-x-4 gap-y-8">
+        <div className="grid grid-cols-3 lg:grid-cols-6 gap-x-2 md:gap-x-4 gap-y-8">
           {clients.map((client, index) => (
             <div key={index} className="flex flex-col gap-2 group cursor-default">
               
