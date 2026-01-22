@@ -39,7 +39,7 @@ export default function ProjectGallery({
   // Motion Value for the drag x position
   const x = useMotionValue(0);
 
-  const categories = ["All", "Cricket", "Football", "Lacrosse", "Other", "Personal"];
+  const categories = ["All", "Cricket", "Football", "Lacrosse", "Matchdays" , "Other" ];
 
   useEffect(() => {
     const fetchProjects = async () => {

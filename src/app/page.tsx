@@ -66,6 +66,7 @@ export default function Home() {
         </div>
       </div>
 
+
       {/* --- GRAPHICS SLIDER --- */}
       <div className="mb-10">
         <ProjectGallery isHome={true} />

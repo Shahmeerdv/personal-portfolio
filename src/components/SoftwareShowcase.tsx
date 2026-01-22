@@ -1,17 +1,34 @@
 "use client";
-import { useState } from "react";
+import { useState, useCallback } from "react"; 
 import { motion, AnimatePresence } from "framer-motion";
-import { Github, X, Layers } from "lucide-react";
-import Link from "next/link"; // <--- Import Link
+import { Github, X, Layers, ZoomIn, ChevronLeft, ChevronRight } from "lucide-react"; 
+import Link from "next/link";
 import { softwareProjects } from "@/lib/softwareProjects";
 
 export default function SoftwareShowcase({ showTitle = true }: { showTitle?: boolean }) {
   const [selected, setSelected] = useState<(typeof softwareProjects)[0] | null>(null);
+  
+  // Track the current image index
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  const currentScreenshots = selected?.screenshots || [];
+
+  // --- Navigation Logic ---
+  const showNext = useCallback((e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (lightboxIndex === null) return;
+    setLightboxIndex((prev) => (prev! + 1) % currentScreenshots.length);
+  }, [lightboxIndex, currentScreenshots.length]);
+
+  const showPrev = useCallback((e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (lightboxIndex === null) return;
+    setLightboxIndex((prev) => (prev! - 1 + currentScreenshots.length) % currentScreenshots.length);
+  }, [lightboxIndex, currentScreenshots.length]);
 
   return (
     <section className="py-20 px-4 max-w-7xl mx-auto">
       
-      {/* 👇 UPDATED: Title is now a Link to the full page */}
       {showTitle && (
         <div className="mb-10 border-l-4 border-blue-500 pl-4">
           <Link href="/software" className="group inline-block">
@@ -55,7 +72,7 @@ export default function SoftwareShowcase({ showTitle = true }: { showTitle?: boo
         ))}
       </div>
 
-      {/* --- THE MODAL (POPUP) --- */}
+      {/* --- PROJECT DETAILS MODAL --- */}
       <AnimatePresence>
         {selected && (
           <motion.div
@@ -110,18 +127,28 @@ export default function SoftwareShowcase({ showTitle = true }: { showTitle?: boo
                   </div>
                 </div>
 
-                {/* Screenshots Gallery in Modal */}
-                {selected.screenshots && selected.screenshots.length > 0 && (
+                {/* Gallery Grid */}
+                {currentScreenshots.length > 0 && (
                   <>
                     <h4 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-4">Project Gallery</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {selected.screenshots.map((shot, index) => (
-                        <div key={index} className="relative aspect-video rounded-lg overflow-hidden border border-zinc-800 group">
+                      {currentScreenshots.map((shot, index) => (
+                        <div 
+                          key={index} 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setLightboxIndex(index);
+                          }}
+                          className="relative aspect-video rounded-lg overflow-hidden border border-zinc-800 group cursor-zoom-in"
+                        >
                           <img 
                             src={shot} 
                             alt={`${selected.title} screenshot ${index + 1}`} 
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                             <ZoomIn className="text-white" size={24} />
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -132,6 +159,76 @@ export default function SoftwareShowcase({ showTitle = true }: { showTitle?: boo
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* --- FULL SCREEN LIGHTBOX (Instant Switch) --- */}
+      <AnimatePresence>
+        {lightboxIndex !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-black/95 p-4 backdrop-blur-md touch-none"
+            onClick={() => setLightboxIndex(null)}
+          >
+            {/* Close Button */}
+            <button 
+                onClick={() => setLightboxIndex(null)}
+                className="absolute top-6 right-6 z-20 text-zinc-400 hover:text-white p-2 rounded-full bg-zinc-900/50 hover:bg-zinc-800 transition-all"
+            >
+                <X size={32} />
+            </button>
+            
+            {/* Navigation Arrows */}
+            {currentScreenshots.length > 1 && (
+              <>
+                <button
+                  onClick={showPrev}
+                  className="absolute left-4 z-20 hidden md:flex p-3 rounded-full bg-black/50 text-white hover:bg-zinc-800/80 transition-all"
+                >
+                  <ChevronLeft size={32} />
+                </button>
+                <button
+                  onClick={showNext}
+                  className="absolute right-4 z-20 hidden md:flex p-3 rounded-full bg-black/50 text-white hover:bg-zinc-800/80 transition-all"
+                >
+                  <ChevronRight size={32} />
+                </button>
+              </>
+            )}
+
+            {/* The Image (No transition animations) */}
+            <motion.img
+                key={lightboxIndex} 
+                src={currentScreenshots[lightboxIndex]}
+                alt={`Screenshot ${lightboxIndex + 1}`}
+                // 👇 Swipe Logic (Drag)
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.2} 
+                onDragEnd={(e, { offset }) => {
+                  const swipeThreshold = 50; 
+                  if (offset.x > swipeThreshold) {
+                    showPrev();
+                  } else if (offset.x < -swipeThreshold) {
+                    showNext();
+                  }
+                }}
+                // 👇 No animation props here = Instant Switch
+                className="max-w-full max-h-[90vh] object-contain rounded-md shadow-2xl relative z-10"
+                onClick={(e) => e.stopPropagation()} 
+            />
+
+            {/* Counter */}
+            {currentScreenshots.length > 1 && (
+                 <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-zinc-400 text-sm bg-black/50 px-3 py-1 rounded-full">
+                   {lightboxIndex + 1} / {currentScreenshots.length}
+                 </div>
+            )}
+
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </section>
   );
 }
