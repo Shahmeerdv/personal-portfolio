@@ -9,7 +9,7 @@ const clients = [
   { name: "PCB", location: "Pakistan", logo: "/logos/pcb.png" },
   { name: "Big Star Creations", location: "UK", logo: "/logos/big-star.png" },
   { name: "Zuju", location: "International", logo: "/logos/zuju.png" },
-  { name: "DigiBolt", location: "Pakistan", logo: "/logos/DigiBoltt" },
+  { name: "DigiBolt", location: "Pakistan", logo: "/logos/DigiBoltt.png" },
 ];
 
 export default function AboutPage() {
