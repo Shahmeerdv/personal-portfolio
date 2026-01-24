@@ -8,27 +8,28 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-6 left-0 right-0 z-50 flex justify-center">
-      <div className="flex items-center pl-1 pr-6 py-1 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-full shadow-2xl">
+      {/* FIXED PADDING HERE:
+         - Changed 'pl-1' to 'pl-2' (gives profile pic a tiny bit of breathing room)
+         - Changed 'pr-6' to 'pr-4' (tightens the right side so it doesn't look empty)
+      */}
+      <div className="flex items-center pl-2.5 pr-3 py-1.5 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-full shadow-2xl">
         
         {/* --- PROFILE ICON --- */}
         <Link 
           href="/" 
-          // 1. Added 'flex' so it holds its shape perfectly
-          // 2. Removed 'mr-2' (we will use the parent gap for spacing instead)
           className="relative flex shrink-0 w-10 h-10 rounded-full overflow-hidden border border-zinc-700 hover:border-emerald-400 transition-colors group"
         >
           <Image 
             src="/profile3.png" 
             alt="Profile"
             fill
-            // 3. CHANGED to 'object-[50%_35%]' to pull the image down slightly so your head isn't cut off
             className="object-cover object-[50%_35%] group-hover:scale-105 transition-transform duration-300"
           />
         </Link>
 
         {/* --- NAVIGATION LINKS --- */}
-        {/* 4. Removed the extra <div> wrapper. Now flex gap handles consistent spacing. */}
-        <div className="flex items-center gap-6 ml-4">
+        {/* Adjusted ml-3 (was ml-4) to tighten the gap between profile and text slightly */}
+        <div className="flex items-center gap-6 ml-3">
           <Link 
             href="/" 
             className={`text-sm font-medium transition-colors ${
