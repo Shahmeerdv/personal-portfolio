@@ -54,16 +54,13 @@ export const softwareProjects = [
   },
   {
     id: 5,
-    title: "E-Commerce Dashboard",
-    description: "Full-stack admin panel for managing products and orders.",
-    tech: ["Next.js", "Supabase", "Tailwind"],
-    github: "https://github.com/shahmeer/dashboard",
+    title: "Gemini Clone",
+    description: "Made a clone of Gemini using React and Tailwind CSS at my Netsol Internship. for learning purposes.",
+    tech: ["React", "Ollama", "Tailwind", "FastAPI"],
+    github: "https://github.com/Shahmeerdv/Gemini-Clone.git",
     screenshots: [
-      "/software/dash-1.jpg",
-      "/software/dash-2.jpg",
-      "/software/dash-3.jpg",
-      "/software/dash-3.jpg",
-      "/software/dash-3.jpg",
+      "/software/Gemini-clone.png",
+      "/software/Gemini-Clone-2.jpeg",
     ]
   },
   // Add more projects here...

@@ -2,7 +2,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase"; 
 import SpotlightCard from "@/components/SpotlightCard";
-import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion"; 
+import { motion, AnimatePresence, useMotionValue } from "framer-motion"; 
 import { X, LayoutGrid, StretchHorizontal, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react"; 
 import Link from "next/link"; 
 
@@ -33,13 +33,20 @@ export default function ProjectGallery({
   const [isGridMode, setIsGridMode] = useState(false);
   const [filter, setFilter] = useState("All");
   
-  // We use this to force a re-render animation when index changes
   const [direction, setDirection] = useState(0);
-
-  // Motion Value for the drag x position
   const x = useMotionValue(0);
 
-  const categories = ["All", "Cricket", "Football", "Lacrosse", "Matchdays" , "Other" ];
+  const categories = ["All", "Cricket", "Football", "Lacrosse", "Matchdays", "Other"];
+
+  // 1. LOCK BODY SCROLL (Hides scrollbar & scroll-up button)
+  useEffect(() => {
+    if (selectedProject) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => { document.body.style.overflow = "auto"; };
+  }, [selectedProject]);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -67,7 +74,6 @@ export default function ProjectGallery({
     }
   }
 
-  // --- NAVIGATION HELPERS ---
   const navList = isHome ? projects.slice(0, 6) : filteredProjects;
 
   const getProject = useCallback((offset: number) => {
@@ -83,10 +89,9 @@ export default function ProjectGallery({
     if (!nextProj) return;
     setDirection(newDirection);
     setSelectedProject(nextProj);
-    x.set(0); // Reset drag position instantly for the new slide
+    x.set(0); 
   }, [getProject, x]);
 
-  // Keyboard
   useEffect(() => {
     if (!selectedProject) return;
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -101,7 +106,6 @@ export default function ProjectGallery({
   if (loading) return <div className="text-center text-zinc-500 py-10">Loading...</div>;
   if (projects.length === 0) return null;
 
-  // Prepare Neighbors for the Carousel
   const prevProject = getProject(-1);
   const nextProject = getProject(1);
 
@@ -179,7 +183,7 @@ export default function ProjectGallery({
         </motion.div>
       </AnimatePresence>
 
-      {/* --- CAROUSEL MODAL --- */}
+      {/* --- LIGHTBOX MODAL --- */}
       <AnimatePresence>
         {selectedProject && (
           <motion.div
@@ -187,10 +191,14 @@ export default function ProjectGallery({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSelectedProject(null)} 
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm p-4 overflow-hidden" // overflow-hidden is important
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-md p-0 overflow-hidden"
           >
-            <button className="fixed top-5 right-5 text-white/50 hover:text-white z-[60] p-2 bg-black/20 backdrop-blur-md rounded-full transition-all hover:bg-black/50">
-              <X size={32} />
+            {/* 2. PROMINENT CLOSE BUTTON */}
+            <button 
+                onClick={() => setSelectedProject(null)}
+                className="fixed top-6 right-6 z-[110] p-3 rounded-full bg-white/10 border border-white/20 text-white backdrop-blur-lg hover:bg-red-500/80 hover:border-red-500 hover:rotate-90 transition-all duration-300 shadow-2xl group"
+            >
+              <X size={32} strokeWidth={2.5} className="drop-shadow-md" />
             </button>
 
             {/* Container for the draggable strip */}
@@ -199,63 +207,54 @@ export default function ProjectGallery({
               onClick={(e) => e.stopPropagation()}
             >
               
-              {/* Arrows */}
-              <button onClick={(e) => { e.stopPropagation(); navigateLightbox(-1); }} className="absolute left-2 md:left-4 z-50 p-3 rounded-full text-white/70 bg-black/30 backdrop-blur-sm border border-white/10 transition-all duration-300 hover:bg-black/70 hover:text-white hover:border-white/30 hover:scale-110 active:scale-95 hidden md:flex items-center justify-center">
-                <ChevronLeft size={32} strokeWidth={1.5} />
+              {/* Navigation Arrows */}
+              <button onClick={(e) => { e.stopPropagation(); navigateLightbox(-1); }} className="absolute left-4 md:left-8 z-50 p-4 rounded-full text-white/90 bg-black/40 backdrop-blur-md border border-white/10 hover:bg-white hover:text-black transition-all hover:scale-110 active:scale-95 hidden md:flex items-center justify-center">
+                  <ChevronLeft size={36} strokeWidth={2} />
               </button>
-              <button onClick={(e) => { e.stopPropagation(); navigateLightbox(1); }} className="absolute right-2 md:right-4 z-50 p-3 rounded-full text-white/70 bg-black/30 backdrop-blur-sm border border-white/10 transition-all duration-300 hover:bg-black/70 hover:text-white hover:border-white/30 hover:scale-110 active:scale-95 hidden md:flex items-center justify-center">
-                <ChevronRight size={32} strokeWidth={1.5} />
+              <button onClick={(e) => { e.stopPropagation(); navigateLightbox(1); }} className="absolute right-4 md:right-8 z-50 p-4 rounded-full text-white/90 bg-black/40 backdrop-blur-md border border-white/10 hover:bg-white hover:text-black transition-all hover:scale-110 active:scale-95 hidden md:flex items-center justify-center">
+                  <ChevronRight size={36} strokeWidth={2} />
               </button>
 
-              {/* 👇 THE DRAGGABLE STRIP */}
+              {/* DRAGGABLE STRIP */}
               <motion.div
-                className="relative flex items-center justify-center w-full max-w-5xl h-[85vh]"
-                style={{ x }} // Connect motion value
+                className="relative flex items-center justify-center w-full h-full md:max-w-7xl"
+                style={{ x }} 
                 drag="x"
-                dragConstraints={{ left: 0, right: 0 }} // We handle snap manually
-                dragElastic={0.2} // Feel resistance
+                dragConstraints={{ left: 0, right: 0 }} 
+                dragElastic={0.2} 
                 onDragEnd={(e, { offset, velocity }) => {
                   const swipe = Math.abs(offset.x) * velocity.x;
                   const threshold = 10000;
-                  // If swiped enough, navigate. Else bounce back (x resets via key change or manual set)
                   if (swipe < -threshold || offset.x < -100) navigateLightbox(1);
                   else if (swipe > threshold || offset.x > 100) navigateLightbox(-1);
-                  else x.set(0); // Bounce back
+                  else x.set(0); 
                 }}
               >
                 
                 {/* PREV Image (Left) */}
                 {prevProject && (
-                  <div className="absolute left-[-100%] top-0 w-full h-full flex items-center justify-center px-4">
-                    <img 
-                      src={prevProject.image_url || ""} 
-                      className="max-h-full max-w-full rounded-lg object-contain opacity-50 scale-95" 
-                      alt="prev" 
-                    />
+                  <div className="absolute left-[-100%] top-0 w-full h-full flex items-center justify-center px-4 opacity-30 blur-sm">
+                    <img src={prevProject.image_url || ""} className="max-h-[80vh] object-contain" alt="prev" />
                   </div>
                 )}
 
                 {/* CURRENT Image (Center) */}
                 <div className="relative w-full h-full flex items-center justify-center px-4">
                   <motion.img
-                    key={selectedProject.id} // Re-renders cleanly
+                    key={selectedProject.id}
                     initial={{ scale: 0.95, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ duration: 0.3 }}
                     src={selectedProject.image_url || ""}
-                    className="max-h-full max-w-full rounded-lg shadow-2xl border border-zinc-800 object-contain cursor-grab active:cursor-grabbing"
+                    className="max-h-full max-w-full rounded-md shadow-2xl object-contain border border-zinc-800"
                     alt={selectedProject.title}
                   />
                 </div>
 
                 {/* NEXT Image (Right) */}
                 {nextProject && (
-                  <div className="absolute left-[100%] top-0 w-full h-full flex items-center justify-center px-4">
-                    <img 
-                      src={nextProject.image_url || ""} 
-                      className="max-h-full max-w-full rounded-lg object-contain opacity-50 scale-95" 
-                      alt="next" 
-                    />
+                  <div className="absolute left-[100%] top-0 w-full h-full flex items-center justify-center px-4 opacity-30 blur-sm">
+                    <img src={nextProject.image_url || ""} className="max-h-[80vh] object-contain" alt="next" />
                   </div>
                 )}
                 
