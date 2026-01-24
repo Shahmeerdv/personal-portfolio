@@ -12,7 +12,7 @@ export default function Navbar() {
          - Changed 'pl-1' to 'pl-2' (gives profile pic a tiny bit of breathing room)
          - Changed 'pr-6' to 'pr-4' (tightens the right side so it doesn't look empty)
       */}
-      <div className="flex items-center pl-2.5 pr-3 py-1.5 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-full shadow-2xl">
+      <div className="flex items-center pl-4.5 pr-5 py-1.5 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-full shadow-2xl">
         
         {/* --- PROFILE ICON --- */}
         <Link 
@@ -29,7 +29,7 @@ export default function Navbar() {
 
         {/* --- NAVIGATION LINKS --- */}
         {/* Adjusted ml-3 (was ml-4) to tighten the gap between profile and text slightly */}
-        <div className="flex items-center gap-6 ml-3">
+        <div className="flex items-center gap-4 ml-3">
           <Link 
             href="/" 
             className={`text-sm font-medium transition-colors ${
