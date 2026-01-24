@@ -59,7 +59,7 @@ export const softwareProjects = [
     tech: ["React", "Ollama", "Tailwind", "FastAPI"],
     github: "https://github.com/Shahmeerdv/Gemini-Clone.git",
     screenshots: [
-      "/software/Gemini-clone.png",
+      "/software/Gemini-Clone.png",
       "/software/Gemini-Clone-2.jpeg",
     ]
   },
