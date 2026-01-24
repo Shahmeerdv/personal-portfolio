@@ -55,7 +55,7 @@ export const softwareProjects = [
   {
     id: 5,
     title: "Gemini Clone",
-    description: "Made a clone of Gemini using React and Tailwind CSS at my Netsol Internship. for learning purposes.",
+    description: "Made a clone of Gemini using React and Tailwind CSS at my Netsol Internship for learning purposes.",
     tech: ["React", "Ollama", "Tailwind", "FastAPI"],
     github: "https://github.com/Shahmeerdv/Gemini-Clone.git",
     screenshots: [
