@@ -30,14 +30,16 @@ export const softwareProjects = [
   },
   {
     id: 3,
-    title: "E-Commerce Dashboard",
-    description: "Full-stack admin panel for managing products and orders.",
-    tech: ["Next.js", "Supabase", "Tailwind"],
-    github: "https://github.com/shahmeer/dashboard",
+    title: "Finwise Mobile App",
+    description: "Flutter mobile app for personal finance management with budgeting and expense tracking features.(Group Project)",
+    tech: ["Flutter", "Dart", "Firebase"],
+    github: "https://github.com/Huzaifakhalid1/FinWise-lite-App.git",
     screenshots: [
-      "/software/dash-1.jpg",
-      "/software/dash-2.jpg",
-      "/software/dash-3.jpg"
+      "/software/flutter (1).jpeg",
+      "/software/flutter (2).jpeg",
+      "/software/flutter (3).jpeg",
+      "/software/flutter (4).jpeg",
+      "/software/flutter (5).jpeg"
     ]
   },
   {
