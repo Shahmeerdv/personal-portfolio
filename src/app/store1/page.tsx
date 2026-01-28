@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowLeft, Construction, ShoppingBag } from "lucide-react";
+import { ArrowLeft, Construction, ShoppingBag, ShieldCheck } from "lucide-react";
 import SpotlightCard from "@/components/SpotlightCard";
 
 export default function StorePage() {
@@ -12,8 +12,8 @@ export default function StorePage() {
       <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[120px]" />
       <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px]" />
 
-      <div className="w-full max-w-2xl relative z-10">
-        <SpotlightCard className="p-12 text-center border-zinc-800 bg-zinc-900/50 backdrop-blur-xl">
+      <div className="w-full max-w-2xl relative z-10 flex flex-col items-center">
+        <SpotlightCard className="p-12 text-center border-zinc-800 bg-zinc-900/50 backdrop-blur-xl mb-8">
           
           {/* Animated Icon */}
           <motion.div
@@ -38,7 +38,7 @@ export default function StorePage() {
               Store Coming Soon
             </h1>
             <p className="text-lg text-zinc-400 mb-8 max-w-md mx-auto leading-relaxed">
-              We are currently finalizing our payment gateway integration with <span className="text-white font-semibold">Lemon Squeezy</span>. The digital asset store will be live shortly.
+              We are currently finalizing our payment gateway integration with <span className="text-white font-semibold">Paddle</span>. The digital asset store will be live shortly.
             </p>
 
             {/* Buttons */}
@@ -52,7 +52,7 @@ export default function StorePage() {
               </Link>
               
               <Link 
-                href="/"
+                href="/graphics" // Updated to point to graphics portfolio
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-zinc-700 text-zinc-300 hover:text-white hover:border-zinc-500 hover:bg-zinc-800 transition-all"
               >
                 Browse Portfolio
@@ -61,6 +61,18 @@ export default function StorePage() {
           </motion.div>
 
         </SpotlightCard>
+
+        {/* --- Legal Links Footer (Added for Paddle Verification) --- */}
+        <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="flex flex-wrap justify-center gap-6 text-sm text-zinc-500"
+        >
+            <Link href="/terms" className="hover:text-zinc-300 transition-colors">Terms of Service</Link>
+            <Link href="/privacy" className="hover:text-zinc-300 transition-colors">Privacy Policy</Link>
+            <Link href="/refund-policy" className="hover:text-zinc-300 transition-colors">Refund Policy</Link>
+        </motion.div>
 
         {/* Status Badge */}
         <motion.div 
