@@ -5,7 +5,7 @@ export default function TermsPage() {
     <LegalPageLayout title="Terms of Service" date="January 28, 2026">
       <section>
         <h2 className="text-2xl font-bold text-white mb-4">1. Acceptance of Terms</h2>
-        <p>By purchasing and downloading digital assets from [Your Website Name], you agree to be bound by these Terms of Service. If you do not agree, please do not use our products.</p>
+        <p>By purchasing and downloading digital assets from shahmeer.tech, you agree to be bound by these Terms of Service. If you do not agree, please do not use our products.</p>
       </section>
 
       <section>
