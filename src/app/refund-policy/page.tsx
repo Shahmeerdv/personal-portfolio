@@ -2,25 +2,29 @@ import LegalPageLayout from "@/components/LegalPageLayout";
 
 export default function RefundPage() {
   return (
-    <LegalPageLayout title="Refund Policy" date="January 28, 2026">
+    <LegalPageLayout title="Refund Policy" date="February 03, 2026">
       <section>
-        <h2 className="text-2xl font-bold text-white mb-4">Digital Products Policy</h2>
-        <p>Due to the nature of digital assets (instant download), <strong>all sales are final and non-refundable</strong>. Once a file has been downloaded, it cannot be returned.</p>
+        <h2 className="text-2xl font-bold text-white mb-4">14-Day Money-Back Guarantee</h2>
+        <p>
+          We want you to be completely satisfied with your purchase. In compliance with consumer protection standards, we offer a **full 14-day refund window** for all digital products purchased through our store.
+        </p>
+        <p className="mt-4">
+          If you are not satisfied with the product that you have purchased from us, you are eligible for a full reimbursement within 14 calendar days of your purchase.
+        </p>
       </section>
 
       <section>
-        <h2 className="text-2xl font-bold text-white mb-4">Exceptions</h2>
-        <p>We want you to be happy with your purchase. We may offer a refund or replacement under the following specific circumstances:</p>
-        <ul className="list-disc pl-6 mt-4 space-y-2">
-          <li>The file is technically corrupted or defective and cannot be opened.</li>
-          <li>The product description was significantly misleading (e.g., missing files promised in the description).</li>
-          <li>A duplicate purchase was made by accident.</li>
-        </ul>
+        <h2 className="text-2xl font-bold text-white mb-4">No Questions Asked</h2>
+        <p>
+          To exercise your right of cancellation, you do not need to provide a specific reason, though feedback is appreciated. Simply contact us within the 14-day period to initiate the refund process.
+        </p>
       </section>
 
       <section>
-        <h2 className="text-2xl font-bold text-white mb-4">How to Request Support</h2>
-        <p>If you have issues with a file, please contact us at <strong>mshahmeer86@gmail.com</strong>. We are committed to fixing any technical issues you encounter.</p>
+        <h2 className="text-2xl font-bold text-white mb-4">How to Request a Refund</h2>
+        <p>
+          Please email us at <strong>mshahmeer86@gmail.com</strong> with your Order ID. We will process your refund via Paddle immediately. The funds typically return to your bank account within 5-10 business days depending on your bank.
+        </p>
       </section>
     </LegalPageLayout>
   );
