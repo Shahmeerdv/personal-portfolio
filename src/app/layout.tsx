@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer"; 
 import BackgroundSpotlight from "@/components/BackgroundSpotlight";
+import { Analytics } from "@vercel/analytics/react"; // 👈 1. Added import
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -36,6 +37,9 @@ export default function RootLayout({
         <Navbar />
         {children}
         <Footer /> 
+
+        {/* 👇 3. Render the Analytics component */}
+        <Analytics />
       </body>
     </html>
   );
