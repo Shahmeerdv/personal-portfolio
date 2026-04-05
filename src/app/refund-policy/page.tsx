@@ -6,7 +6,7 @@ export default function RefundPage() {
       <section>
         <h2 className="text-2xl font-bold text-white mb-4">14-Day Money-Back Guarantee</h2>
         <p>
-          We want you to be completely satisfied with your purchase. In compliance with consumer protection standards, we offer a **full 14-day refund window** for all digital products purchased through our store.
+          We want you to be completely satisfied with your purchases and product. In compliance with consumer protection standards, we offer a **full 14-day refund window** for all digital products purchased through our store.
         </p>
         <p className="mt-4">
           If you are not satisfied with the product that you have purchased from us, you are eligible for a full reimbursement within 14 calendar days of your purchase.
