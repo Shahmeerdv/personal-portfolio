@@ -1,9 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Copy, Check, Instagram, Twitter, Linkedin, Github } from "lucide-react";
 
 export default function Footer() {
   const [copied, setCopied] = useState(false);
+  const [currentTime, setCurrentTime] = useState(""); // 👈 Added state for the time
   const email = "mshahmeer86@gmail.com"; 
 
   const handleCopy = () => {
@@ -11,6 +12,24 @@ export default function Footer() {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  // 👈 Added useEffect to handle the time safely on the client
+  useEffect(() => {
+    const updateTime = () => {
+      setCurrentTime(
+        new Date().toLocaleTimeString('en-US', {
+          hour: '2-digit', 
+          minute:'2-digit', 
+          timeZone: 'Asia/Karachi'
+        })
+      );
+    };
+    
+    updateTime(); // Run immediately on mount
+    const intervalId = setInterval(updateTime, 60000); // Update the time every minute
+    
+    return () => clearInterval(intervalId); // Cleanup on unmount
+  }, []);
 
   return (
     <footer className="border-t border-zinc-800 bg-black pt-20 pb-10 px-6">
@@ -33,7 +52,7 @@ export default function Footer() {
             </button>
           </div>
 
-          {/* Social Links - UPDATED HERE */}
+          {/* Social Links */}
           <div className="flex gap-4">
              {[
                { icon: <Instagram size={20}/>, link: "https://www.instagram.com/msgraphics_10/" },
@@ -57,7 +76,10 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row justify-between items-center text-xs text-zinc-600 border-t border-zinc-900 pt-8">
            <p>© 2026. All rights reserved.</p>
-           <p className="mt-2 md:mt-0">Faisalabad, Pakistan • Local Time: {new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', timeZone: 'Asia/Karachi'})}</p>
+           {/* 👇 Conditionally render the time to avoid hydration mismatch */}
+           <p className="mt-2 md:mt-0">
+            Faisalabad, Pakistan • Local Time: {currentTime || "--:--"}
+           </p>
         </div>
       </div>
     </footer>

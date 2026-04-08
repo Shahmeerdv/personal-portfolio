@@ -41,7 +41,7 @@ export default function AboutPage() {
                01. The Engineer
              </h3>
              <p>
-               My focus is on building scalable, intelligent systems. Specializing in <strong className="text-white">Web Development</strong> and <strong className="text-white">Artificial Intelligence</strong>, I develop robust applications using Next.js and Python. I am actively exploring how AI agents can solve complex real-world problems.
+                My focus lies at the intersection of scalable <strong className="text-white">Web Development</strong> and <strong className="text-white">Artificial Intelligence</strong>. With my primary drive focused on the evolving field of AI. I am constantly learning and experimenting with intelligent automation tools to build AI agents that solve complex, real-world problems.
              </p>
            </div>
 
