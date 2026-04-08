@@ -60,7 +60,7 @@ export default function AboutPage() {
            <SpotlightCard className="p-8">
               <h3 className="text-lg font-mono text-blue-400 mb-4 tracking-widest">ENGINEERING STACK</h3>
               <div className="flex flex-wrap gap-2">
-                 {["React", "Next.js", "TypeScript", "Python", "TensorFlow", "OpenCV", "Supabase"].map((tech) => (
+                 {["React", "Next.js", "TypeScript", "Python", "TensorFlow", "OpenCV", "Supabase","Mongodb","N8N"].map((tech) => (
                     <span key={tech} className="px-3 py-1 text-sm bg-zinc-900 border border-zinc-800 rounded-full text-zinc-300">
                        {tech}
                     </span>
