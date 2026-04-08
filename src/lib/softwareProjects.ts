@@ -44,14 +44,15 @@ export const softwareProjects = [
   },
   {
     id: 4,
-    title: "E-Commerce Dashboard",
-    description: "Full-stack admin panel for managing products and orders.",
-    tech: ["Next.js", "Supabase", "Tailwind"],
+    title: "Finwise AI",
+    description: "AI-powered financial insights and analytics platform.",
+    tech: ["Next.js", "Mongodb", "Tailwind","N8N"],
     github: "https://github.com/shahmeer/dashboard",
     screenshots: [
-      "/software/dash-1.jpg",
-      "/software/dash-2.jpg",
-      "/software/dash-3.jpg"
+      "/software/Finwise (1).png",
+      "/software/Finwise (2).png",
+      "/software/Finwise (3).png",
+      "/software/Finwise (4).png"
     ]
   },
   {
