@@ -50,7 +50,7 @@ const products = [
     price: "$15.00",
     description: "The secret sauce for pro designs. A curated starter pack of stadium lights, dust particles, and grunge textures to overlay on your work.",
     features: ["20 High-Res Overlays", "Transparent PNGs & JPEGs", "Compatible with Any Software"],
-    image: "/dummystore/gfx-pack.jpg",
+    image: "/dummystore/gfx-pack.png",
   },
 ];
 
