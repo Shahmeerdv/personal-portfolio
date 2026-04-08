@@ -57,7 +57,7 @@ export default function Footer() {
              {[
                { icon: <Instagram size={20}/>, link: "https://www.instagram.com/msgraphics_10/" },
               //  { icon: <Twitter size={20}/>, link: "https://twitter.com/shamiirrr" },
-               { icon: <Linkedin size={20}/>, link: "https://www.linkedin.com/in/muhammad-shahmeer-aaa3872a2?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" },
+               { icon: <Linkedin size={20}/>, link: "https://www.linkedin.com/in/muhammad-shahmeer-aaa3872a2/" },
                { icon: <Github size={20}/>, link: "https://github.com/Shahmeerdv" },
              ].map((social, i) => (
                <a 
