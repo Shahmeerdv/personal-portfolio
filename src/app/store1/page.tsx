@@ -14,7 +14,7 @@ const products = [
     price: "$12.00",
     description: "The essential starter kit for cricket graphics. Includes 3 high-resolution templates: Starting XI, Scorecard, and Player Spotlight.",
     features: ["3 Fully Editable PSD Files", "Smart Object Replacements", "Commercial License Included"],
-    image: "/dummystore/cricket.jpg", 
+    image: "/dummystore/cricket.png", 
   },
   {
     id: 2,
@@ -23,7 +23,7 @@ const products = [
     price: "$14.00",
     description: "Three aggressive, high-energy designs for football clubs. Features a dynamic roster reveal, halftime scoreboard, and 'Goal' alert graphic.",
     features: ["Social Media Optimized (4:5)", "3 Premium PSD Templates", "Free Font Links Included"],
-    image: "/dummystore/football.jpg",
+    image: "/dummystore/football.png",
   },
   {
     id: 3,
@@ -32,7 +32,7 @@ const products = [
     price: "$11.00",
     description: "Three clean, modern layouts designed specifically for Instagram Stories (9:16). Perfect for quick game day announcements.",
     features: ["3 Story Templates", "Live Score & Fixture Layouts", "Easy Color Customization"],
-    image: "/dummystore/matchday.jpg",
+    image: "/dummystore/matchday.png",
   },
   {
     id: 4,
@@ -41,7 +41,7 @@ const products = [
     price: "$10.00",
     description: "Make your headlines pop. A curated set of 3 typography-focused templates perfect for post-match reactions and player quotes.",
     features: ["3 Unique Text Layouts", "Drag-and-Drop Photo Layer", "Bold, Impactful Styles"],
-    image: "/dummystore/quotes.jpg",
+    image: "/dummystore/quotes.png",
   },
   {
     id: 5,
