@@ -66,5 +66,16 @@ export const softwareProjects = [
       "/software/Gemini-Clone-2.jpeg",
     ]
   },
+  {
+    id: 6,
+    title: "Game Station",
+    description: "Made a Game Recommendation Website using Next.js and Tailwind for learning purposes.",
+    tech: ["Next", "Ollama", "Tailwind"],
+    github: "https://github.com/Shahmeerdv/game-station.git",
+    screenshots: [
+      "/software/game1.jpeg",
+      "/software/game2.jpeg",
+    ]
+  },
   // Add more projects here...
 ];
