@@ -77,5 +77,16 @@ export const softwareProjects = [
       "/software/game2.jpeg",
     ]
   },
+    {
+    id: 7,
+    title: "SOC Automation: AI-Driven SOAR Pipeline",
+    description: "An automated 9-node SOAR pipeline that leverages AbuseIPDB and n8n to detect, log, and alert on SSH brute-force attacks in real-time.",
+    tech: ["n8n", "AbuseIPDB", "Notion API", "Discord API", "JavaScript"],
+    github: "https://github.com/Shahmeerdv/SOC-Automation-Lab",
+    screenshots: [
+      "/software/n8n-SOC.png",
+      "/software/n8n-SOC2.png", 
+    ]
+}
   // Add more projects here...
 ];
